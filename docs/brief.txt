@@ -1,0 +1,90 @@
+PAGES 1
+
+===== PAGE 1 =====
+FOUNDING ENGINEER · PRACTICAL ASSESSMENT
+Build a gold trading experience people trust.
+Turn live market data into a polished buy-and-sell experience.
+01
+The brief
+Build a deployable, single-user demo for buying and selling gold using live market data. A
+reviewer should be able to understand the starting balances, complete a trade, and see the
+updated balances without extra guidance.
+Product state
+Seed a PKR wallet, customer gold holdings, and platform inventory.
+Keep all three balances internally consistent after every trade.
+Required trading flow
+Show a live 24K rate in PKR per gram. Let the user enter PKR or gold,
+then issue a 75-second locked quote for review and confirmation.
+Finish with updated balances and a receipt.
+Trust requirements
+Show source and data freshness. Handle unavailable pricing,
+insufficient cash, gold or inventory, expired quotes, and repeated
+confirmation safely.
+Out of scope
+No authentication, real money movement, or admin panel. Mock or
+seed anything else needed to keep the reviewer focused on the
+trading experience.
+Prioritize a coherent, finished feature set over gold plating (pun intended).
+02
+Pricing logic
+Fetch pricing on the server no more than once every five minutes. Show the selected source and when it was
+last refreshed. Pause trading if neither source can be trusted.
+PRIMARY
+PakGold
+FALLBACK
+GoldPrice.org
+→
+NORMALIZED
+Market
+reference
+PKR / gram · 24K
+CUSTOMER BUYS max(market × 1.10, guardrail)
+CUSTOMER SELLS market × 0.90
+03
+Trade journey
+The server owns the locked quote. If it expires, help the user get a new one. Never trade quietly at a different price.
+04
+Example stress
+cases
+01
+A source stops answering
+Does the product still tell the truth? 02
+A quote expires
+Can the user continue without confusion?
+03
+A balance runs short
+Cash, gold, and inventory all count. 04
+Confirm is pressed twice
+Does it still create only one trade?
+These are examples, not the full list. Reviewers should be able to try them, including the guardrail, without changing your deployed code.
+05
+Evaluation
+You will be evaluated on:
+01 COMPLETION OF BRIEF
+02 TECHNICAL JUDGMENT & SAFETY
+03 CORRECTNESS & ATTENTION TO DETAIL
+04 PRODUCT THINKING & VISUAL CRAFT
+Visual direction
+Calm, modern, and clearly financial without looking like
+a trading terminal. Use spacing and hierarchy before
+decoration. Treat mobile as a first-class surface. We
+recommend following Asasaʼs design system.
+#0D4A46 #8CCB50 #F9FAFA #1A1F1B
+Curiosity helps; seek and you shall find.
+06
+Submission
+Send us three links
+Use any stack or coding tools.
+EXPECTED EFFORT (WITH AI) ~3 hours
+01 Public GitHub repository Include setup instructions and a WhatIDid.md explaining how you understood the
+assignment, the assumptions you made, what you built, key decisions, and known gaps.
+02 Public deployed product It should open without reviewer credentials.
+03 Build record Share either your full Claude Code, Codex, or other coding-agent transcript, or a continuous
+screen recording of your coding session with the AI agent. Redact secrets, but leave useful
+dead ends in.
+1 See price
+source + freshness 2 Enter
+PKR or gold 3 Review
+75-sec lock 4 Confirm
+settle once 5 Complete
+balances + receipt
