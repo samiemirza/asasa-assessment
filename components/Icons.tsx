@@ -15,6 +15,12 @@ const base = (p: P) => ({
 export const HomeIcon = (p: P) => (
   <svg {...base(p)}><path d="M4 11.5 12 4.5l8 7" /><path d="M6.5 10v9.5h11V10" /><path d="M10 19.5v-5h4v5" /></svg>
 );
+export const HomeFilled = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none"><path d="M12 3.6 3.2 11.3a1 1 0 0 0 .66 1.75H5.5V19a1.5 1.5 0 0 0 1.5 1.5h3v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5h3a1.5 1.5 0 0 0 1.5-1.5v-5.95h1.64a1 1 0 0 0 .66-1.75z" /></svg>
+);
+export const ProfileFilled = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none"><circle cx="12" cy="8.5" r="4.2" /><path d="M4.2 19.6c1.3-3.6 4.2-5.6 7.8-5.6s6.5 2 7.8 5.6c.2.5-.2 1-.7 1H4.9c-.5 0-.9-.5-.7-1z" /></svg>
+);
 export const TradeIcon = (p: P) => (
   <svg {...base(p)}><path d="M4 8h13M13 4l4 4-4 4" /><path d="M20 16H7M11 12l-4 4 4 4" /></svg>
 );

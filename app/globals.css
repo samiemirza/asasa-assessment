@@ -115,29 +115,54 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+/* Floating liquid-glass tab bar (lib/tabbar/motion-constants.ts holds the numbers) */
+.tabbar-positioner {
+  /* Fixed-height positioner: the bar contracts around its own centre instead
+     of hanging off a moving bottom edge. Sticky so content travels behind it. */
+  --bar-side: 15px;
+  position: sticky;
+  bottom: max(var(--bar-side), env(safe-area-inset-bottom));
+  margin-top: auto;
+  margin-bottom: max(var(--bar-side), env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20;
+}
 .glass-bar {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  backdrop-filter: blur(22px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-    0 18px 40px rgba(0, 0, 0, 0.45);
+  position: relative;
+  border-radius: 999px;
+  pointer-events: auto;
+  /* Soft ambient lift only, the glass carries the depth. */
+  box-shadow: 0 8px 24px rgba(18, 15, 26, 0.1);
 }
-.glass-thumb {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.09));
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 6px 16px rgba(0, 0, 0, 0.3);
-  transition:
-    transform 520ms cubic-bezier(0.32, 1.5, 0.5, 1),
-    opacity 200ms ease;
-  will-change: transform;
+.glass-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 21, 38, 0.52);
+  -webkit-backdrop-filter: blur(25px) saturate(150%);
+  backdrop-filter: blur(25px) saturate(150%);
+  pointer-events: none;
 }
-@media (prefers-reduced-motion: reduce) {
-  .glass-thumb { transition: opacity 200ms ease; }
+.glass-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 999px;
+  transform-origin: center;
+  will-change: transform, width, height;
+  pointer-events: none;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-surface {
+    background: var(--color-card-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @keyframes pulse-dot {
