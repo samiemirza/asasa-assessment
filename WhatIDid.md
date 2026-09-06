@@ -19,15 +19,17 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 ## What I built
 
-**Home.** A read-only dashboard: the 24K price per gram with the change since the day's first reading, buy and sell prices, when it was updated and from which source; cash and gold balances (gold with its approximate PKR value at the sell price); Buy gold and Sell gold as the two primary actions; and the last three transactions when there are any. Platform inventory is not a customer concern, so it lives on the Market tab as "available to buy". When pricing is paused the card says why and both actions are disabled.
+**Home.** A read-only dashboard: the 24K price per gram with the change since the day's first reading, buy and sell prices, when it was updated and from which source; cash and gold balances (gold with its approximate PKR value at the sell price); Buy gold and Sell gold as the two primary actions; a Market section with the price over recent checks and both source readings (or their errors); and the last three transactions when there are any. Platform inventory is not a customer concern; it only shapes the "available" limit inside the Buy sheet. When pricing is paused the card says why and both actions are disabled.
 
 **Buy and Sell.** A near full-screen sheet, visually separate from the dashboard, in three steps. Amount: you pay or you sell with a PKR or grams unit switch, the available balance, Max, the estimated other side, the rate, fees (none, the spread is in the rate) and the total. Review: the 75 second server-locked quote with a countdown ring driven by the server's `expires_at` and a clock offset, amount paid, gold received, rate, fees and final total. Confirm: a PIN pad (demo PIN 1234) or Face ID and Touch ID through WebAuthn platform authenticators, then settlement and the receipt. On expiry the ring hits zero, the sheet shows the old locked price beside the price now, and the only action is "Get a new quote". Nothing is ever re-priced silently.
 
 **Receipt.** Amount, price, market rate and source at execution, receipt and quote ids, and the three balances after the trade with their deltas. Receipts are immutable and reopenable from History.
 
-**Market.** Selected source, refreshed and next check, both source readings or their errors, cross-source deviation, the pricing rule with the guardrail state, and the last ten refresh attempts.
+**Wallet.** Portfolio value (gold at the sell price plus cash) and payout accounts for withdrawals: the seeded Meezan Bank account and an Add Account form (validated Pakistani IBAN, kept in the browser only).
 
-**Profile.** A dummy account screen in the same visual system: identity card, live portfolio value (gold at today's sell price plus cash), personal details, payout bank account, notification and security preferences.
+**Market detail, formerly its own tab.** Selected source, refreshed and next check, both source readings or their errors, cross-source deviation, the pricing rule with the guardrail state, and the last ten refresh attempts.
+
+**Profile.** A dummy account screen in the same visual system: identity card, personal details, notification and security preferences.
 
 **Reviewer endpoint, no admin panel.** The brief puts admin panels out of scope but asks that reviewers can try the stress cases, including the guardrail, without changing code. I first built a Demo tab for this, then removed it on the product owner's direction; the scenario flags stayed as a small `POST /api/demo` endpoint documented in the README with curl commands. Fallbacks need no flags to work, they are automatic.
 
@@ -39,10 +41,10 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 1. **Server owns the quote, the client only carries its id.** Confirm takes nothing price related from the browser. Double clicks, double tabs and retries after a timeout all resolve to the same trade because the SQL function is idempotent and the unique constraint is the backstop.
 2. **Transaction-scoped advisory lock, not session-scoped.** The Neon connection string points at the pooled endpoint (PgBouncer, transaction mode). A session-scoped `pg_try_advisory_lock` there can leak onto an unrelated client. `pg_advisory_xact_lock` releases with the transaction.
-3. **Three freshness tiers.** Live (latest attempt succeeded inside the window), last good price (latest attempt failed, the last good price is under 15 minutes old and stays tradable with its age shown), paused (nothing trustworthy, no quotes issued). The dashboard card and the Market tab show the same tier.
+3. **Three freshness tiers.** Live (latest attempt succeeded inside the window), last good price (latest attempt failed, the last good price is under 15 minutes old and stays tradable with its age shown), paused (nothing trustworthy, no quotes issued). The dashboard card and the Market section show the same tier.
 4. **PKR entry rounds grams down.** When a user types PKR, grams are floored to 4 dp and the PKR actually charged is re-derived, so nobody is charged more than they typed. Grams entry rounds PKR to 2 dp.
 5. **Report the tightest constraint.** With the seed numbers, 10 g of inventory costs about PKR 435,000, so cash can never be the only thing blocking a buy. The quote pre-check reports whichever constraint binds first and tells the user the maximum they can do, and the same checks run again atomically at confirm. Cash-first shortfalls become reachable when the guardrail raises the buy price.
-6. **Both sources are polled each refresh, primary wins.** That costs one extra request every five minutes and buys a cross-source deviation check (over 5% shows a notice) and an honest fallback reading on the Market tab even when it is not in use.
+6. **Both sources are polled each refresh, primary wins.** That costs one extra request every five minutes and buys a cross-source deviation check (over 5% shows a notice) and an honest fallback reading in the Market section even when it is not in use.
 7. **One font, no dead links.** Geist only. The dashboard has exactly two actions, Buy and Sell; every step inside the sheet has one. Navigation is the header back control, the sheet's close control and the tab bar.
 8. **The confirmation gate is real on the device, not on the server.** The PIN is a demo constant and the biometric check is a WebAuthn platform-authenticator gesture whose assertion is not verified server side, because there are no accounts. It shows the intended UX; a real system would verify the assertion against a registered credential before settling.
 

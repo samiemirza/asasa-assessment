@@ -58,6 +58,11 @@ export function DashboardSkeleton() {
         <Sk className="h-14 rounded-pill bg-card" />
         <Sk className="h-14 rounded-pill bg-card" />
       </div>
+      <Sk className="mb-2 mt-5 h-5 w-20 bg-card" />
+      <CardSk>
+        <div className="px-5 pt-4"><Sk className="h-[92px]" /></div>
+        <RowsSk rows={2} />
+      </CardSk>
     </div>
   );
 }

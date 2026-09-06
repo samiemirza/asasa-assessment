@@ -53,7 +53,7 @@ async function HistoryContent() {
 export default function HistoryPage() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header title="History" subtitle="Every trade has a receipt" />
+      <Header logo title="Transactions" subtitle="Every trade has a receipt" />
       <Suspense fallback={<HistorySkeleton />}>
         <HistoryContent />
       </Suspense>

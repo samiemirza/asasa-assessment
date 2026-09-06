@@ -23,13 +23,13 @@ import { geometry, TAB_BAR_MOTION as M } from "@/lib/tabbar/motion-constants";
 import { frameBatch, MotionValue } from "@/lib/tabbar/motion-value";
 import { useTabBarScroll } from "@/lib/tabbar/use-tab-bar-scroll";
 import { GlassSurface } from "./GlassSurface";
-import { HomeFilled, HomeIcon, ProfileFilled, ProfileIcon, StatusIcon, TradeIcon } from "./Icons";
+import { HomeFilled, HomeIcon, ProfileFilled, ProfileIcon, TradeIcon, WalletFilled, WalletIcon } from "./Icons";
 import { TabBarIndicator } from "./TabBarIndicator";
 
 const TABS = [
   { href: "/", label: "Home", Icon: HomeIcon, Filled: HomeFilled },
-  { href: "/history", label: "History", Icon: TradeIcon, Filled: TradeIcon },
-  { href: "/market", label: "Market", Icon: StatusIcon, Filled: StatusIcon },
+  { href: "/history", label: "Transactions", Icon: TradeIcon, Filled: TradeIcon },
+  { href: "/wallet", label: "Wallet", Icon: WalletIcon, Filled: WalletFilled },
   { href: "/profile", label: "Profile", Icon: ProfileIcon, Filled: ProfileFilled },
 ];
 
@@ -133,9 +133,10 @@ export function TabBar() {
                   ref={(n) => {
                     icons.current[i] = n;
                   }}
-                  className="grid place-items-center"
+                  className="flex flex-col items-center gap-0.5"
                 >
-                  <Glyph size={M.iconSize} strokeWidth={focused ? 2.2 : 1.8} />
+                  <Glyph size={22} strokeWidth={focused ? 2.2 : 1.8} />
+                  <span className="text-[10px] font-medium leading-none tracking-[-0.01em]">{label}</span>
                 </span>
               </Link>
             );

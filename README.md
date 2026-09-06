@@ -67,7 +67,7 @@ Expired quotes, double confirms and every balance shortfall need no flags at all
 ## How it is put together
 
 ```
-app/(tabs)/            Home (read-only dashboard), History, Market, Profile
+app/(tabs)/            Home (dashboard with market section), Transactions, Wallet, Profile
 components/TradeSheet  Buy and Sell flow: amount, 75 s locked review, PIN or biometric confirm
 app/trade/[id]         Receipt with before and after balances
 app/api/*              JSON route handlers (see below)

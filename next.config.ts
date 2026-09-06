@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async redirects() {
-    return [{ source: "/status", destination: "/market", permanent: true }];
+    return [
+      { source: "/status", destination: "/", permanent: true },
+      { source: "/market", destination: "/", permanent: true },
+    ];
   },
 };
 

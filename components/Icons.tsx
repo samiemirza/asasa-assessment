@@ -21,6 +21,10 @@ export const HomeFilled = (p: P) => (
 export const ProfileFilled = (p: P) => (
   <svg {...base(p)} fill="currentColor" stroke="none"><circle cx="12" cy="8.5" r="4.2" /><path d="M4.2 19.6c1.3-3.6 4.2-5.6 7.8-5.6s6.5 2 7.8 5.6c.2.5-.2 1-.7 1H4.9c-.5 0-.9-.5-.7-1z" /></svg>
 );
+export const WalletFilled = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none"><path d="M6 4.5h11.5A3 3 0 0 1 20.5 7.5v1.75H15a3.25 3.25 0 0 0 0 6.5h5.5v1.75a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3zm9 6.25h5.5v3H15a1.5 1.5 0 0 1 0-3z" /></svg>
+);
+export const PlusIcon = (p: P) => <svg {...base(p)}><path d="M12 5v14M5 12h14" /></svg>;
 export const TradeIcon = (p: P) => (
   <svg {...base(p)}><path d="M4 8h13M13 4l4 4-4 4" /><path d="M20 16H7M11 12l-4 4 4 4" /></svg>
 );

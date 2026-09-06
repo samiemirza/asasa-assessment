@@ -7,6 +7,7 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "sw
 export const metadata: Metadata = {
   title: "Asasa Gold",
   description: "Buy and sell 24K gold in PKR at a live market rate with a 75 second locked quote.",
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
 };
 
 export const viewport: Viewport = {
