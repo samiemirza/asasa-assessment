@@ -1,0 +1,19 @@
+# deps / build
+node_modules/
+.next/
+out/
+dist/
+coverage/
+# env & platform
+.env
+.env.*
+!.env.example
+.vercel/
+supabase/.temp/
+supabase/.branches/
+# os / editor
+.DS_Store
+*.log
+!logs/**
+# throwaway
+pdfenv/
