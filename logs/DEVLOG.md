@@ -21,3 +21,16 @@ Companion machine logs live in `logs/agent/` and full transcripts in `logs/trans
 
 ### 2026-09-06 17:57 PKT
 **UI direction received (phase 3 unblocked).** Reference: dark fintech mobile dashboard (near-black shell, charcoal rounded cards, one light tinted hero card, big numerals, pill badges, bottom tab bar, phones on a pale sage ground). Constraints from Samie: swap hero colours for Asasa identity, one font family, no double CTA buttons, no dead links, no extra text, no em dashes, polished. Decision: Geist only; ink shell with forest/green accents; on desktop the app renders as a phone-width frame on a pale forest ground to echo the reference; four tabs (Trade, History, Status, Demo) all real routes. Building phases 0 to 5 in one go now.
+
+### 2026-09-06 18:24 PKT
+**Phases 0 to 4 built and deployed.** Next.js 16 + Tailwind 4 + node-postgres on Neon; schema, seed, confirm_quote() and reset_demo() in db/migrations/001_schema.sql; adapters + refresh engine (pg_advisory_xact_lock, at most one upstream call per 5 min, demo toggles request an early refresh) in lib/pricing; quote service in lib/quotes; 9 API routes; UI in the dark card style from the reference with Asasa colours and Geist only. Production: https://asasa-assessment.vercel.app (personal scope samie-ahmads-projects, project asasa-assessment).
+- Dead end #4: vitest 5 config as .ts fails under Node 22.9 (ERR_REQUIRE_ESM); renamed to vitest.config.mts.
+- Dead end #5: my first hand-computed test constants were wrong (39538.71 vs the correct 39538.70); the code was right, fixed the tests.
+- Dead end #6: headless Chrome --window-size cannot go below ~500px on macOS so 390px screenshots were cropped; wrote scripts/shots.mjs which drives the DevTools protocol with mobile emulation instead.
+- Dead end #7: GoldPrice.org returned 403 (rate limited) from my IP for the whole session after the research probes; the adapter records it as a failed fallback and the Status page shows it honestly.
+- Finding: with the confirmed seed (PKR 500,000 and 10 g inventory at ~PKR 43.5k buy price) cash can never be the only binding constraint on a buy, since 10 g costs ~435k. The quote pre-check now reports whichever constraint binds first so the 'up to' hint is always achievable; cash-first shortfalls are reachable by raising the guardrail.
+- .env had no trailing newline, so appending DATABASE_URL glued it onto line 1 (dead end #8); rewrote the file. Switched to sslmode=verify-full to silence pg 8.23's deprecation warning.
+- Smoke script scripts/smoke.mjs: 36 checks including a parallel double confirm and an overlapping-sell race.
+
+### 2026-09-06 18:30 PKT
+**Fallback fixed in production.** GoldPrice.org answered 403 from Vercel with a browser User-Agent alone. Deployed a throwaway /api/debug-goldprice probe (preview deployment, reached through 'vercel curl -L' because previews are protected) that tried three header sets against three URLs: only the set with Referer/Origin goldprice.org plus Sec-Fetch and sec-ch-ua headers got 200 (server nginx instead of the Webscale edge). Adopted that header set in the adapter, removed the probe, redeployed. With 'Primary source down' the app now serves GoldPrice.org (39,538.72) and shows fallback in use; both sources deviate by 0.00%. Wrote README.md and WhatIDid.md. Smoke suite green against production.

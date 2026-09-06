@@ -2,10 +2,21 @@ import { round2, TROY_OZ_G } from "../money";
 import type { AdapterResult, PriceAdapter } from "./types";
 
 const TIMEOUT_MS = 4000;
+// GoldPrice.org's data host answers 403 to non-browser requests. Verified from Vercel on 2026-09-06:
+// user agent alone is not enough, the Referer, Origin and Sec-Fetch headers are what unlock it.
 const BROWSER_HEADERS = {
   "User-Agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36",
   Accept: "application/json, text/plain, */*",
+  "Accept-Language": "en-US,en;q=0.9",
+  Referer: "https://goldprice.org/",
+  Origin: "https://goldprice.org",
+  "Sec-Fetch-Dest": "empty",
+  "Sec-Fetch-Mode": "cors",
+  "Sec-Fetch-Site": "same-site",
+  "sec-ch-ua": '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": '"macOS"',
 };
 
 /** Reject values that cannot be a 24K PKR per gram price (catches unit mix-ups). */
