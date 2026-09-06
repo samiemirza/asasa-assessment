@@ -5,7 +5,7 @@ import { Card, Row, SectionTitle } from "@/components/Row";
 import { PillSk, StatusSkeleton } from "@/components/Skeleton";
 import { StatusPill } from "@/components/StatusPill";
 import { fmtPKR, fmtTime, inTime } from "@/lib/format";
-import { cachedPrice, cachedSnapshots } from "@/lib/data";
+import { cachedBalances, cachedPrice, cachedSnapshots } from "@/lib/data";
 import { SOURCE_LABEL } from "@/lib/pricing/types";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ async function HeaderPill() {
 }
 
 async function StatusContent() {
-  const [p, snaps] = await Promise.all([cachedPrice(), cachedSnapshots(10)]);
+  const [p, snaps, b] = await Promise.all([cachedPrice(), cachedSnapshots(10), cachedBalances()]);
   const cap = Math.round(p.staleCapSeconds / 60);
 
   return (
@@ -76,6 +76,7 @@ async function StatusContent() {
         <Row label="You sell at" value={p.sell != null ? `${fmtPKR(p.sell, 2)} / g` : "Paused"} sub={`Market x ${p.markdown.toFixed(2)}`} />
         <Row label="Guardrail floor" value={`${fmtPKR(p.guardrail, 2)} / g`} sub="Minimum buy price" />
         <Row label="Quote lock" value={`${p.quoteTtlSeconds} seconds`} sub="Owned by the server" />
+        <Row label="Available to buy" value={`${b.inventoryGoldG.toFixed(4)} g`} sub="Platform inventory" />
       </Card>
 
       <SectionTitle>Recent checks</SectionTitle>
@@ -106,7 +107,7 @@ export default function StatusPage() {
   return (
     <main className="flex-1 px-4 pb-6">
       <Header
-        title="Pricing status"
+        title="Market"
         subtitle={`Checked at most once every ${MINS} minutes`}
         right={
           <Suspense fallback={<PillSk />}>

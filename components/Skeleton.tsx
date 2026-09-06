@@ -28,40 +28,36 @@ export function PillSk() {
   return <Sk className="h-7 w-16 rounded-pill" />;
 }
 
-export function TradeSkeleton() {
+export function DashboardSkeleton() {
   return (
     <div role="status" aria-label="Loading">
       <CardSk className="hero-paused rise p-5">
         <div className="flex items-center justify-between">
-          <Sk className="h-3.5 w-32 bg-ink/10" />
-          <Sk className="h-7 w-16 rounded-pill bg-ink/10" />
+          <Sk className="h-3.5 w-28 bg-ink/10" />
+          <Sk className="h-6 w-24 rounded-pill bg-ink/10" />
         </div>
-        <Sk className="mt-4 h-11 w-48 bg-ink/10" />
+        <Sk className="mt-4 h-11 w-56 bg-ink/10" />
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Sk className="h-[66px] bg-ink/10" />
           <Sk className="h-[66px] bg-ink/10" />
         </div>
-        <Sk className="mt-4 h-3 w-56 bg-ink/10" />
+        <Sk className="mt-4 h-3 w-44 bg-ink/10" />
       </CardSk>
       <div className="mt-3 grid grid-cols-2 gap-3">
-        <CardSk className="col-span-2 p-5">
-          <Sk className="h-3.5 w-16" />
-          <Sk className="mt-3 h-8 w-52" />
+        <CardSk className="p-4">
+          <Sk className="h-3.5 w-24" />
+          <Sk className="mt-3 h-6 w-28" />
         </CardSk>
         <CardSk className="p-4">
-          <Sk className="h-7 w-24 rounded-pill" />
-          <Sk className="mt-4 h-6 w-24" />
-        </CardSk>
-        <CardSk className="p-4">
-          <Sk className="h-7 w-24 rounded-pill" />
-          <Sk className="mt-4 h-6 w-24" />
+          <Sk className="h-3.5 w-24" />
+          <Sk className="mt-3 h-6 w-24" />
+          <Sk className="mt-2 h-3 w-20" />
         </CardSk>
       </div>
-      <CardSk className="mt-3 p-4">
-        <Sk className="h-12 rounded-pill" />
-        <Sk className="mt-4 h-[126px]" />
-        <Sk className="mt-4 h-14 rounded-pill" />
-      </CardSk>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <Sk className="h-14 rounded-pill bg-card" />
+        <Sk className="h-14 rounded-pill bg-card" />
+      </div>
     </div>
   );
 }
@@ -118,23 +114,6 @@ export function PortfolioSkeleton() {
         <Sk className="h-[66px]" />
       </div>
     </CardSk>
-  );
-}
-
-export function QuoteSkeleton() {
-  return (
-    <div role="status" aria-label="Loading">
-      <CardSk className="p-5 text-center">
-        <Sk className="mx-auto h-[132px] w-[132px] rounded-full" />
-        <Sk className="mx-auto mt-4 h-3.5 w-16" />
-        <Sk className="mx-auto mt-3 h-10 w-40" />
-        <Sk className="mx-auto mt-3 h-3.5 w-36" />
-      </CardSk>
-      <div className="mt-3">
-        <RowsSk rows={4} />
-      </div>
-      <Sk className="mt-4 h-14 rounded-pill bg-card" />
-    </div>
   );
 }
 

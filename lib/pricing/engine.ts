@@ -71,6 +71,16 @@ async function readState(db: Queryable = getPool()): Promise<PriceState> {
   };
 }
 
+/** First good price of the current Pakistan day, for the "% today" context. */
+export async function getDayOpen(): Promise<number | null> {
+  const { rows } = await getPool().query(
+    `select market_pkr_per_g from price_snapshots
+      where ok and fetched_at >= (date_trunc('day', now() at time zone 'Asia/Karachi') at time zone 'Asia/Karachi')
+      order by fetched_at asc limit 1`,
+  );
+  return rows[0] ? num(rows[0].market_pkr_per_g) : null;
+}
+
 export async function listSnapshots(limit = 24): Promise<Snapshot[]> {
   const { rows } = await getPool().query("select * from price_snapshots order by fetched_at desc limit $1", [limit]);
   return rows.map(rowToSnapshot);

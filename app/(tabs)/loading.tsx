@@ -1,11 +1,11 @@
 import { Header } from "@/components/Header";
-import { TradeSkeleton } from "@/components/Skeleton";
+import { DashboardSkeleton } from "@/components/Skeleton";
 
 export default function Loading() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header title="Asasa Gold" subtitle="Buy and sell 24K gold in PKR" />
-      <TradeSkeleton />
+      <Header title="Asasa Gold" />
+      <DashboardSkeleton />
     </main>
   );
 }

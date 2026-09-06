@@ -28,8 +28,8 @@ import { TabBarIndicator } from "./TabBarIndicator";
 
 const TABS = [
   { href: "/", label: "Home", Icon: HomeIcon, Filled: HomeFilled },
-  { href: "/history", label: "Transactions", Icon: TradeIcon, Filled: TradeIcon },
-  { href: "/status", label: "Pricing status", Icon: StatusIcon, Filled: StatusIcon },
+  { href: "/history", label: "History", Icon: TradeIcon, Filled: TradeIcon },
+  { href: "/market", label: "Market", Icon: StatusIcon, Filled: StatusIcon },
   { href: "/profile", label: "Profile", Icon: ProfileIcon, Filled: ProfileFilled },
 ];
 

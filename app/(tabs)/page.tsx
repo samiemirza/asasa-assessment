@@ -1,34 +1,32 @@
 import { Suspense } from "react";
 import { BalanceCards } from "@/components/BalanceCards";
+import { DashboardActions } from "@/components/DashboardActions";
 import { Header } from "@/components/Header";
-import { PriceHero } from "@/components/PriceHero";
-import { TradeSkeleton } from "@/components/Skeleton";
-import { TradeForm } from "@/components/TradeForm";
-import { cachedBalances, cachedPrice, cachedSnapshots } from "@/lib/data";
+import { MarketCard } from "@/components/MarketCard";
+import { RecentTransactions } from "@/components/RecentTransactions";
+import { DashboardSkeleton } from "@/components/Skeleton";
+import { cachedBalances, cachedDayOpen, cachedPrice, cachedTrades } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-async function TradeContent() {
-  const [price, balances, snapshots] = await Promise.all([cachedPrice(), cachedBalances(), cachedSnapshots(24)]);
-  const history = snapshots
-    .filter((s) => s.ok && s.marketPkrPerG != null)
-    .map((s) => s.marketPkrPerG as number)
-    .reverse();
+async function Dashboard() {
+  const [price, balances, dayOpen, trades] = await Promise.all([cachedPrice(), cachedBalances(), cachedDayOpen(), cachedTrades(3)]);
   return (
     <>
-      <PriceHero initial={price} history={history} />
-      <BalanceCards balances={balances} />
-      <TradeForm price={price} balances={balances} />
+      <MarketCard initial={price} dayOpen={dayOpen} />
+      <BalanceCards balances={balances} sellPrice={price.sell} />
+      <DashboardActions price={price} balances={balances} />
+      <RecentTransactions trades={trades} />
     </>
   );
 }
 
-export default function TradePage() {
+export default function HomePage() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header title="Asasa Gold" subtitle="Buy and sell 24K gold in PKR" />
-      <Suspense fallback={<TradeSkeleton />}>
-        <TradeContent />
+      <Header title="Asasa Gold" />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <Dashboard />
       </Suspense>
     </main>
   );

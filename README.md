@@ -67,8 +67,8 @@ Expired quotes, double confirms and every balance shortfall need no flags at all
 ## How it is put together
 
 ```
-app/(tabs)/            Trade, History, Status, Profile screens
-app/quote/[id]         Review a locked quote (countdown, confirm, expiry)
+app/(tabs)/            Home (read-only dashboard), History, Market, Profile
+components/TradeSheet  Buy and Sell flow: amount, 75 s locked review, PIN or biometric confirm
 app/trade/[id]         Receipt with before and after balances
 app/api/*              JSON route handlers (see below)
 lib/pricing/           adapters (PakGold, GoldPrice.org), refresh engine, freshness rules
