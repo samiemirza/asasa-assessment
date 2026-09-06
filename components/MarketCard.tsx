@@ -68,6 +68,7 @@ export function MarketCard({ initial, dayOpen }: { initial: PriceView; dayOpen: 
           <div className="rounded-inner bg-ink/6 px-3.5 py-3">
             <p className="text-[12px] text-ink/65">Buy price</p>
             <p className="num mt-0.5 text-[17px] font-semibold">{fmtPKR(price.buy!)}</p>
+            {price.guardrailApplied ? <p className="mt-0.5 text-[11px] font-medium text-forest">Guardrail applied</p> : null}
           </div>
           <div className="rounded-inner bg-ink/6 px-3.5 py-3">
             <p className="text-[12px] text-ink/65">Sell price</p>

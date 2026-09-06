@@ -343,7 +343,11 @@ export function TradeSheet({
               </div>
 
               <div className="mt-3 divide-y divide-hairline rounded-card bg-card">
-                <Row label={isBuy ? "Buy rate" : "Sell rate"} value={unit != null ? `${fmtPKR(unit, 2)} / g` : "Paused"} sub={price.guardrailApplied && isBuy ? "Guardrail applied" : undefined} />
+                <Row
+                  label={isBuy ? "Buy rate" : "Sell rate"}
+                  value={unit != null ? `${fmtPKR(unit, 2)} / g` : "Paused"}
+                  sub={isBuy ? `${price.guardrailApplied ? "Guardrail applied · " : ""}Platform has ${fmtG(balances.inventoryGoldG)} available` : undefined}
+                />
                 <Row label="Fees" value="PKR 0.00" sub="Spread included in rate" />
                 <Row label={isBuy ? "Total to pay" : "Total to receive"} value={leg ? fmtPKR(leg.pkr, 2) : "PKR 0.00"} />
               </div>

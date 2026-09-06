@@ -1,6 +1,6 @@
 # Asasa Founding Engineer Assessment — Build Plan
 
-**Status:** plan approved pending UI direction · **Owner:** Samie Ahmad (personal accounts) · **Written:** 2026-09-06
+**Status:** original plan, kept as written for the build record. The product evolved after the UI direction arrived (read-only dashboard, Buy and Sell sheet with PIN or biometric confirm, Wallet tab, no Demo tab); [WhatIDid.md](./WhatIDid.md) describes what shipped. · **Owner:** Samie Ahmad (personal accounts) · **Written:** 2026-09-06
 **Brief:** [Asasa - Founding Engineer Assessment.pdf](./Asasa%20-%20Founding%20Engineer%20Assessment.pdf) · extracted text in [docs/brief.txt](./docs/brief.txt)
 
 ---

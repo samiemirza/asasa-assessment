@@ -90,6 +90,8 @@ scripts/               migrate, smoke test, screenshots, devlog harness
 | `GET /api/trades`, `GET /api/trades/:id` | History and receipts |
 | `GET/POST /api/demo`, `POST /api/demo/reset` | Reviewer scenario flags and reset (no UI, see above) |
 
+Confirming a trade in the app asks for a PIN. The demo PIN is **1234** (shown on the screen); Face ID or Touch ID is offered where the device supports it.
+
 Errors come back as `{ error: { code, message, details } }` with codes such as `QUOTE_EXPIRED`, `INSUFFICIENT_CASH`, `INSUFFICIENT_GOLD`, `INSUFFICIENT_INVENTORY`, `PRICING_UNAVAILABLE`.
 
 ## Deploy

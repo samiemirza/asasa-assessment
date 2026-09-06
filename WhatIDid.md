@@ -19,7 +19,7 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 ## What I built
 
-**Home.** A read-only dashboard: the 24K price per gram with the change since the day's first reading, buy and sell prices, when it was updated and from which source; cash and gold balances (gold with its approximate PKR value at the sell price); Buy gold and Sell gold as the two primary actions; a Market section with the price over recent checks and both source readings (or their errors); and the last three transactions when there are any. Platform inventory is not a customer concern; it only shapes the "available" limit inside the Buy sheet. When pricing is paused the card says why and both actions are disabled.
+**Home.** A read-only dashboard: the 24K price per gram with the change since the day's first reading, buy and sell prices, when it was updated and from which source; cash and gold balances (gold with its approximate PKR value at the sell price); Buy gold and Sell gold as the two primary actions; and a Market section with the price over recent checks and both source readings (or their errors, so an outage is visible without leaving the page). Platform inventory is not a customer concern, so it stays off the dashboard; the Buy flow shows how much the platform has available, and every receipt shows the inventory movement. When the guardrail binds, the Buy price tile says so. When pricing is paused the card says why and both actions are disabled.
 
 **Buy and Sell.** A near full-screen sheet, visually separate from the dashboard, in three steps. Amount: you pay or you sell with a PKR or grams unit switch, the available balance, Max, the estimated other side, the rate, fees (none, the spread is in the rate) and the total. Review: the 75 second server-locked quote with a countdown ring driven by the server's `expires_at` and a clock offset, amount paid, gold received, rate, fees and final total. Confirm: a PIN pad (demo PIN 1234) or Face ID and Touch ID through WebAuthn platform authenticators, then settlement and the receipt. On expiry the ring hits zero, the sheet shows the old locked price beside the price now, and the only action is "Get a new quote". Nothing is ever re-priced silently.
 
@@ -27,13 +27,15 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 **Wallet.** Portfolio value (gold at the sell price plus cash) and payout accounts for withdrawals: the seeded Meezan Bank account and an Add Account form (validated Pakistani IBAN, kept in the browser only).
 
-**Market detail, formerly its own tab.** Selected source, refreshed and next check, both source readings or their errors, cross-source deviation, the pricing rule with the guardrail state, and the last ten refresh attempts.
+**Transactions.** Every trade grouped by month, newest first, each row opening its receipt.
 
 **Profile.** A dummy account screen in the same visual system: identity card, personal details, notification and security preferences.
 
 **Reviewer endpoint, no admin panel.** The brief puts admin panels out of scope but asks that reviewers can try the stress cases, including the guardrail, without changing code. I first built a Demo tab for this, then removed it on the product owner's direction; the scenario flags stayed as a small `POST /api/demo` endpoint documented in the README with curl commands. Fallbacks need no flags to work, they are automatic.
 
 **Server.** Postgres owns the invariants: balances have `>= 0` checks, `trades.quote_id` is unique, `confirm_quote(uuid)` does the whole settlement in one transaction with row locks and returns the existing trade on a repeat call, and a ledger records every balance movement so before and after always reconcile. Upstream refresh is guarded by a transaction-scoped advisory lock so concurrent requests wait for one fetch rather than each calling upstream.
+
+**Reviewer checklist for the stress cases.** Each can be tried on the deployed link without code changes. Insufficient cash, gold or inventory: type an amount above the balance (or tap Max and add more), the sheet names the binding constraint and the most you can do; the same checks run again atomically at confirm. Quote expiry: wait out the 75 seconds on the review step, or shorten the lock with the reviewer endpoint, then use "Get a new quote". Confirm pressed twice: the PIN step disables itself while settling, and the API returns the same trade on any repeat (the smoke script fires two confirms in parallel). Source outage, both sources down, stale pricing and the guardrail: the curl commands in the README flip server-side flags; the Home card, the Market section and the sheet all reflect the state within one request.
 
 **Tests.** 20 unit tests for money math, adapter parsing and freshness rules. A 36 check end-to-end smoke script that runs against local or production and covers a parallel double confirm, an overlapping-sell race, expiry, all three shortfalls, guardrail binding, primary outage, both sources down, forced stale, and reset.
 
@@ -52,7 +54,8 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 - "PakGold" is PakGold's published spot formula reproduced server side, not a feed from pakgold.pk, because the site has no API and its HTML carries no numbers.
 - The reviewer endpoint is unauthenticated by requirement. A real system would gate it, and a real system would not let a client change the guardrail.
-- Single user, single currency, no auth, no fees or taxes, no partial fills, no price chart beyond a small sparkline once enough history exists.
+- Single user, single currency, no auth, no fees or taxes, no partial fills, no withdrawals (the Wallet's payout accounts are illustrative).
+- The refresh log lives in the database and the API, not in the UI. The Market section shows the latest check and its errors; earlier checks are visible through `price_snapshots` or the smoke script's output.
 - Upstream feeds are third parties with no SLA. If both are unreachable for 15 minutes the product pauses, which is the intended behaviour, but a production system would want more than two sources and alerting.
 - The PIN and biometric gate is device-local UX, not server-enforced authorisation (see decision 8).
 - Times are shown in Pakistan time regardless of the viewer's location, a deliberate choice for a PKR product and to keep server and client rendering identical.
