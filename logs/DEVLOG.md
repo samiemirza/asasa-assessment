@@ -18,3 +18,6 @@ Companion machine logs live in `logs/agent/` and full transcripts in `logs/trans
 - `.env` confirmed gitignored. Sourcing it with `set -a; . ./.env` failed silently because the URL contains an unquoted `&` (dead end #3) — parsing the key explicitly instead.
 - Repo confirmed live at github.com/samiemirza/asasa-assessment. `gh` still not installed.
 - **Answered the platform question: responsive web app, mobile-first — not a native app.** The brief wants a public URL that opens with no credentials, and lists mobile as a first-class surface, which is a phone-shaped web build. Recorded as decision #1 in PLAN.md.
+
+### 2026-09-06 17:57 PKT
+**UI direction received (phase 3 unblocked).** Reference: dark fintech mobile dashboard (near-black shell, charcoal rounded cards, one light tinted hero card, big numerals, pill badges, bottom tab bar, phones on a pale sage ground). Constraints from Samie: swap hero colours for Asasa identity, one font family, no double CTA buttons, no dead links, no extra text, no em dashes, polished. Decision: Geist only; ink shell with forest/green accents; on desktop the app renders as a phone-width frame on a pale forest ground to echo the reference; four tabs (Trade, History, Status, Demo) all real routes. Building phases 0 to 5 in one go now.
