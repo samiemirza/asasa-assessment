@@ -1,57 +1,77 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Header } from "@/components/Header";
 import { ChevronRight, HistoryIcon } from "@/components/Icons";
 import { HistorySkeleton } from "@/components/Skeleton";
-import { fmtDateTime, fmtG, fmtPKR } from "@/lib/format";
-import { listTrades } from "@/lib/quotes/service";
+import { fmtDateTime, fmtG, fmtMonth, fmtPKR } from "@/lib/format";
+import { listTrades, type TradeView } from "@/lib/quotes/service";
 
 export const dynamic = "force-dynamic";
 
+/** Trades come newest first; group them into month sections in that order. */
+function byMonth(trades: TradeView[]): { month: string; trades: TradeView[] }[] {
+  const groups: { month: string; trades: TradeView[] }[] = [];
+  for (const t of trades) {
+    const month = fmtMonth(t.executedAt);
+    const last = groups[groups.length - 1];
+    if (last && last.month === month) last.trades.push(t);
+    else groups.push({ month, trades: [t] });
+  }
+  return groups;
+}
+
 async function HistoryContent() {
-  const trades = await listTrades(100);
+  const trades = await listTrades(200);
+  if (trades.length === 0) {
+    return (
+      <div className="rounded-card bg-card px-6 py-14 text-center">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-card-2 text-fg-2">
+          <HistoryIcon size={22} />
+        </span>
+        <p className="mt-4 text-[15px] font-medium">No trades yet</p>
+      </div>
+    );
+  }
   return (
     <>
-      {trades.length === 0 ? (
-        <div className="rounded-card bg-card px-6 py-14 text-center">
-          <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-card-2 text-fg-2">
-            <HistoryIcon size={22} />
-          </span>
-          <p className="mt-4 text-[15px] font-medium">No trades yet</p>
-        </div>
-      ) : (
-        <ul className="space-y-2">
-          {trades.map((t) => {
-            const isBuy = t.side === "buy";
-            return (
-              <li key={t.id} className="rise">
-                <Link href={`/trade/${t.id}`} className="flex items-center gap-3 rounded-card bg-card px-4 py-3.5 transition-colors hover:bg-card-2">
-                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-[13px] font-semibold ${isBuy ? "bg-green-tint text-green-soft" : "bg-gold-tint text-gold"}`}>
-                    {isBuy ? "B" : "S"}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="num block truncate text-[15px] font-medium">
-                      {isBuy ? "Bought" : "Sold"} {fmtG(t.goldG)}
+      {byMonth(trades).map(({ month, trades: items }) => (
+        <section key={month} aria-label={month} className="mb-5">
+          <h2 className="mb-2 px-1 text-[13px] font-medium text-fg-2">{month}</h2>
+          <ul className="divide-y divide-hairline rounded-card bg-card">
+            {items.map((t) => {
+              const isBuy = t.side === "buy";
+              return (
+                <li key={t.id} className="rise">
+                  <Link href={`/trade/${t.id}`} className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-card-2">
+                    <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-[13px] font-semibold ${isBuy ? "bg-green-tint text-green-soft" : "bg-gold-tint text-gold"}`}>
+                      {isBuy ? "B" : "S"}
                     </span>
-                    <span className="block text-[12px] text-fg-3">{fmtDateTime(t.executedAt)}</span>
-                  </span>
-                  <span className={`num text-[14px] font-medium ${isBuy ? "text-rose" : "text-green-soft"}`}>
-                    {isBuy ? "-" : "+"}
-                    {fmtPKR(t.pkr, 2)}
-                  </span>
-                  <ChevronRight size={18} className="shrink-0 text-fg-3" />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                    <span className="min-w-0 flex-1">
+                      <span className="num block truncate text-[15px] font-medium">
+                        {isBuy ? "Bought" : "Sold"} {fmtG(t.goldG)}
+                      </span>
+                      <span className="block text-[12px] text-fg-3">{fmtDateTime(t.executedAt)}</span>
+                    </span>
+                    <span className={`num text-[14px] font-medium ${isBuy ? "text-rose" : "text-green-soft"}`}>
+                      {isBuy ? "-" : "+"}
+                      {fmtPKR(t.pkr, 2)}
+                    </span>
+                    <ChevronRight size={18} className="shrink-0 text-fg-3" />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </>
   );
 }
 
 export default function HistoryPage() {
   return (
-    <main className="flex-1 px-4 pb-6 pt-3">
+    <main className="flex-1 px-4 pb-6">
+      <Header logo title="Transactions" subtitle="Every trade has a receipt" />
       <Suspense fallback={<HistorySkeleton />}>
         <HistoryContent />
       </Suspense>

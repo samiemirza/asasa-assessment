@@ -39,6 +39,10 @@ export function fmtDateTime(iso: string): string {
   return `${date}, ${fmtTime(iso)} PKT`;
 }
 
+export function fmtMonth(iso: string): string {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: TZ, month: "long", year: "numeric" }).format(new Date(iso));
+}
+
 export function shortId(id: string): string {
   return id.slice(0, 8).toUpperCase();
 }

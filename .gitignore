@@ -17,3 +17,4 @@ supabase/.branches/
 !logs/**
 # throwaway
 pdfenv/
+tsconfig.tsbuildinfo

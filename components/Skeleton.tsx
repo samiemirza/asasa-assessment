@@ -69,39 +69,20 @@ export function DashboardSkeleton() {
 
 export function HistorySkeleton() {
   return (
-    <ul role="status" aria-label="Loading" className="space-y-2">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <li key={i} className="flex items-center gap-3 rounded-card bg-card px-4 py-3.5">
-          <Sk className="h-10 w-10 rounded-full" />
-          <div className="flex-1">
-            <Sk className="h-3.5 w-32" />
-            <Sk className="mt-2 h-3 w-40" />
-          </div>
-          <Sk className="h-3.5 w-20" />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-export function StatusSkeleton() {
-  return (
     <div role="status" aria-label="Loading">
-      <CardSk className="p-5">
-        <Sk className="h-3.5 w-28" />
-        <Sk className="mt-3 h-9 w-44" />
-        <Sk className="mt-3 h-3.5 w-52" />
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <Sk className="h-[66px]" />
-          <Sk className="h-[66px]" />
-        </div>
-      </CardSk>
-      <Sk className="mb-2 mt-5 h-5 w-24 bg-card" />
-      <RowsSk rows={2} />
-      <Sk className="mb-2 mt-5 h-5 w-28 bg-card" />
-      <RowsSk rows={4} />
-      <Sk className="mb-2 mt-5 h-5 w-32 bg-card" />
-      <RowsSk rows={5} />
+      <Sk className="mb-2 h-3.5 w-28 bg-card" />
+      <ul className="divide-y divide-hairline rounded-card bg-card">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <li key={i} className="flex items-center gap-3 px-4 py-3.5">
+            <Sk className="h-10 w-10 rounded-full" />
+            <div className="flex-1">
+              <Sk className="h-3.5 w-32" />
+              <Sk className="mt-2 h-3 w-40" />
+            </div>
+            <Sk className="h-3.5 w-20" />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
