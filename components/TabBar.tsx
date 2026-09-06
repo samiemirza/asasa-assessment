@@ -1,42 +1,44 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HistoryIcon, ProfileIcon, StatusIcon, TradeIcon } from "./Icons";
+import { HomeIcon, ProfileIcon, StatusIcon, TradeIcon } from "./Icons";
 
 const items = [
-  { href: "/", label: "Trade", Icon: TradeIcon },
-  { href: "/history", label: "History", Icon: HistoryIcon },
-  { href: "/status", label: "Status", Icon: StatusIcon },
+  { href: "/", label: "Home", Icon: HomeIcon },
+  { href: "/history", label: "Transactions", Icon: TradeIcon },
+  { href: "/status", label: "Pricing status", Icon: StatusIcon },
   { href: "/profile", label: "Profile", Icon: ProfileIcon },
 ];
 
 export function TabBar() {
   const path = usePathname();
+  const active = items.findIndex(({ href }) => (href === "/" ? path === "/" : path.startsWith(href)));
   return (
-    <nav
-      aria-label="Primary"
-      className="sticky bottom-0 mt-auto border-t border-hairline bg-shell/92 px-3 pt-2 backdrop-blur"
-      style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
+    <div
+      className="pointer-events-none sticky bottom-0 mt-auto px-6 pt-4"
+      style={{ paddingBottom: "max(env(safe-area-inset-bottom), 18px)" }}
     >
-      <ul className="grid grid-cols-4">
-        {items.map(({ href, label, Icon }) => {
-          const active = href === "/" ? path === "/" : path.startsWith(href);
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 rounded-inner py-2 text-[11px] font-medium transition-colors ${
-                  active ? "text-green" : "text-fg-3 hover:text-fg-2"
-                }`}
-              >
-                <Icon size={22} />
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+      <nav aria-label="Primary" className="glass-bar pointer-events-auto relative mx-auto grid h-16 max-w-[320px] grid-cols-4 rounded-pill p-1.5">
+        <span
+          aria-hidden="true"
+          className="glass-thumb absolute left-1.5 top-1.5 h-[calc(100%-12px)] w-[calc(25%-6px)] rounded-pill"
+          style={{ transform: `translateX(calc(${Math.max(active, 0)} * (100% + 8px)))`, opacity: active < 0 ? 0 : 1 }}
+        />
+        {items.map(({ href, label, Icon }, i) => (
+          <Link
+            key={href}
+            href={href}
+            aria-label={label}
+            title={label}
+            aria-current={i === active ? "page" : undefined}
+            className={`relative z-10 grid place-items-center rounded-pill transition-colors duration-300 ${
+              i === active ? "text-green-soft" : "text-fg-2 hover:text-fg"
+            }`}
+          >
+            <Icon size={23} strokeWidth={i === active ? 2 : 1.8} />
+          </Link>
+        ))}
+      </nav>
+    </div>
   );
 }

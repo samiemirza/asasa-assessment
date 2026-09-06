@@ -40,3 +40,6 @@ Companion machine logs live in `logs/agent/` and full transcripts in `logs/trans
 
 ### 2026-09-06 20:12 PKT
 **Demo tab removed, Profile tab added** on Samie's direction (admin panels are out of scope per the brief; fallbacks are automatic). Kept the scenario flags as a UI-less POST /api/demo endpoint documented with curl commands in the README so reviewers can still try outages, stale pricing and the guardrail from the deployed link. Profile is a dummy account screen in the same system: identity card on the hero gradient, live portfolio value (gold at sell price plus cash, Suspense-loaded), personal details, bank account, preference toggles, account rows. Stale .next route types briefly failed tsc after deleting the demo page; cleared .next.
+
+### 2026-09-06 20:20 PKT
+**Floating liquid-glass tab bar.** Replaced the flat bottom bar with a floating pill (blur + saturate backdrop, hairline edge, inner highlight, soft drop shadow), no labels (aria-labels kept), spring-eased sliding thumb between four icons: Home, Transactions (arrows), Status, Profile. Also clamped the hero sparkline to a minimum 1% vertical range after it rendered a 1 PKR source difference as deep dips.

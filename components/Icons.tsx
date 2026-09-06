@@ -12,6 +12,9 @@ const base = (p: P) => ({
   "aria-hidden": true,
 });
 
+export const HomeIcon = (p: P) => (
+  <svg {...base(p)}><path d="M4 11.5 12 4.5l8 7" /><path d="M6.5 10v9.5h11V10" /><path d="M10 19.5v-5h4v5" /></svg>
+);
 export const TradeIcon = (p: P) => (
   <svg {...base(p)}><path d="M4 8h13M13 4l4 4-4 4" /><path d="M20 16H7M11 12l-4 4 4 4" /></svg>
 );
