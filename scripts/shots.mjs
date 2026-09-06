@@ -65,8 +65,13 @@ try {
     const name = nameRaw ?? (path === "/" ? "home" : path.replace(/^\//, "").replace(/[^a-z0-9]+/gi, "-"));
     const loaded = waitEvent("Page.loadEventFired", sessionId);
     await send("Page.navigate", { url: base.replace(/\/$/, "") + path }, sessionId);
-    await loaded;
-    await sleep(1200);
+    if (process.env.EARLY) {
+      // Capture while data is still streaming in, to see the skeleton state.
+      await sleep(Number(process.env.EARLY));
+    } else {
+      await loaded;
+      await sleep(1200);
+    }
     const { cssContentSize } = await send("Page.getLayoutMetrics", {}, sessionId);
     const height = Math.ceil(cssContentSize.height);
     const width = desktop ? 1280 : 390;

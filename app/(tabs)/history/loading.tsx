@@ -1,0 +1,11 @@
+import { Header } from "@/components/Header";
+import { HistorySkeleton } from "@/components/Skeleton";
+
+export default function Loading() {
+  return (
+    <main className="flex-1 px-4 pb-6">
+      <Header title="History" subtitle="Every trade has a receipt" />
+      <HistorySkeleton />
+    </main>
+  );
+}

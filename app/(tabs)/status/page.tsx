@@ -1,22 +1,26 @@
+import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { RelTime } from "@/components/RelTime";
 import { Card, Row, SectionTitle } from "@/components/Row";
+import { PillSk, StatusSkeleton } from "@/components/Skeleton";
 import { StatusPill } from "@/components/StatusPill";
 import { fmtPKR, fmtTime, inTime } from "@/lib/format";
-import { getPriceView, listSnapshots } from "@/lib/pricing/engine";
+import { cachedPrice, cachedSnapshots } from "@/lib/data";
 import { SOURCE_LABEL } from "@/lib/pricing/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function StatusPage() {
-  const [p, snaps] = await Promise.all([getPriceView(), listSnapshots(10)]);
-  const mins = Math.round(p.refreshSeconds / 60);
+async function HeaderPill() {
+  const p = await cachedPrice();
+  return <StatusPill status={p.status} />;
+}
+
+async function StatusContent() {
+  const [p, snaps] = await Promise.all([cachedPrice(), cachedSnapshots(10)]);
   const cap = Math.round(p.staleCapSeconds / 60);
 
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header title="Pricing status" subtitle={`Checked at most once every ${mins} minutes`} right={<StatusPill status={p.status} />} />
-
+    <>
       <Card className="rise p-5">
         <p className="text-[13px] text-fg-2">Market reference</p>
         <p className="display num mt-1 text-[36px] font-semibold">{p.market != null ? fmtPKR(p.market) : "Paused"}</p>
@@ -92,6 +96,27 @@ export default async function StatusPage() {
           </div>
         ))}
       </Card>
+    </>
+  );
+}
+
+const MINS = Math.round(Number(process.env.PRICE_REFRESH_SECONDS ?? 300) / 60);
+
+export default function StatusPage() {
+  return (
+    <main className="flex-1 px-4 pb-6">
+      <Header
+        title="Pricing status"
+        subtitle={`Checked at most once every ${MINS} minutes`}
+        right={
+          <Suspense fallback={<PillSk />}>
+            <HeaderPill />
+          </Suspense>
+        }
+      />
+      <Suspense fallback={<StatusSkeleton />}>
+        <StatusContent />
+      </Suspense>
     </main>
   );
 }

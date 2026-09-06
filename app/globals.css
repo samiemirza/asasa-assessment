@@ -63,14 +63,24 @@ body {
 @media (min-width: 640px) {
   body {
     padding: 28px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
   }
   .shell {
-    max-width: 430px;
-    margin: 0 auto;
-    min-height: calc(100dvh - 56px);
+    width: 430px;
+    height: calc(100dvh - 56px);
+    max-height: 932px;
+    min-height: 600px;
     border-radius: 44px;
     box-shadow: 0 30px 80px rgba(13, 74, 70, 0.28), 0 0 0 1px rgba(13, 74, 70, 0.08);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .shell::-webkit-scrollbar {
+    display: none;
   }
 }
 

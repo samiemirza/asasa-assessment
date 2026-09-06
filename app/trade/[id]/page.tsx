@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { LinkButton } from "@/components/Button";
 import { Header } from "@/components/Header";
 import { Check } from "@/components/Icons";
 import { Card, Row, SectionTitle } from "@/components/Row";
+import { ReceiptSkeleton } from "@/components/Skeleton";
 import { fmtDateTime, fmtG, fmtPKR, shortId } from "@/lib/format";
 import { getTrade } from "@/lib/quotes/service";
 
@@ -24,8 +26,7 @@ function Delta({ label, before, after, fmt }: { label: string; before: number; a
   );
 }
 
-export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+async function ReceiptContent({ id }: { id: string }) {
   const t = await getTrade(id);
   if (!t) notFound();
   const isBuy = t.side === "buy";
@@ -33,8 +34,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
   const g = (n: number) => fmtG(n);
 
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header back="/" title="Receipt" />
+    <>
       <Card className="rise p-6 text-center">
         <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-green text-ink">
           <Check size={28} strokeWidth={2.2} />
@@ -64,6 +64,18 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
       <div className="mt-5">
         <LinkButton href="/">Trade again</LinkButton>
       </div>
+    </>
+  );
+}
+
+export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return (
+    <main className="flex-1 px-4 pb-6">
+      <Header back="/" title="Receipt" />
+      <Suspense fallback={<ReceiptSkeleton />}>
+        <ReceiptContent id={id} />
+      </Suspense>
     </main>
   );
 }

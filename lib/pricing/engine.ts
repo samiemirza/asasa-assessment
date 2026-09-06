@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import type { PoolClient } from "pg";
 import { getPool, iso, num, withTransaction } from "../db";
 import { env } from "../env";
@@ -28,9 +29,7 @@ function rowToSnapshot(r: Record<string, unknown>): Snapshot {
   };
 }
 
-export async function getDemoSettings(db: Queryable = getPool()): Promise<DemoSettings> {
-  const { rows } = await db.query("select * from demo_settings where id = 1");
-  const r = rows[0] ?? {};
+function settingsFromRow(r: Record<string, unknown>): DemoSettings {
   return {
     primaryDown: Boolean(r.primary_down),
     fallbackDown: Boolean(r.fallback_down),
@@ -42,14 +41,34 @@ export async function getDemoSettings(db: Queryable = getPool()): Promise<DemoSe
   };
 }
 
-async function latestAttempt(db: Queryable): Promise<Snapshot | null> {
-  const { rows } = await db.query("select * from price_snapshots order by fetched_at desc limit 1");
-  return rows[0] ? rowToSnapshot(rows[0]) : null;
+export async function getDemoSettings(db: Queryable = getPool()): Promise<DemoSettings> {
+  const { rows } = await db.query("select * from demo_settings where id = 1");
+  return settingsFromRow(rows[0] ?? {});
 }
 
-async function latestGood(db: Queryable): Promise<Snapshot | null> {
-  const { rows } = await db.query("select * from price_snapshots where ok order by fetched_at desc limit 1");
-  return rows[0] ? rowToSnapshot(rows[0]) : null;
+const SNAPSHOT_COLS =
+  "id, fetched_at, ok, source, market_pkr_per_g, upstream_ts, fallback_used, primary_pkr_per_g, fallback_pkr_per_g, deviation_pct, primary_error, fallback_error";
+
+export interface PriceState {
+  settings: DemoSettings;
+  latest: Snapshot | null;
+  good: Snapshot | null;
+}
+
+/** Settings, latest attempt and latest good snapshot in one round trip. */
+async function readState(db: Queryable = getPool()): Promise<PriceState> {
+  const { rows } = await db.query(
+    `select
+       (select row_to_json(d) from demo_settings d where d.id = 1) as settings,
+       (select row_to_json(t) from (select ${SNAPSHOT_COLS} from price_snapshots order by fetched_at desc limit 1) t) as latest,
+       (select row_to_json(t) from (select ${SNAPSHOT_COLS} from price_snapshots where ok order by fetched_at desc limit 1) t) as good`,
+  );
+  const r = rows[0] ?? {};
+  return {
+    settings: settingsFromRow(r.settings ?? {}),
+    latest: r.latest ? rowToSnapshot(r.latest) : null,
+    good: r.good ? rowToSnapshot(r.good) : null,
+  };
 }
 
 export async function listSnapshots(limit = 24): Promise<Snapshot[]> {
@@ -104,16 +123,11 @@ async function fetchAllSources(settings: DemoSettings): Promise<FetchOutcome> {
  * makes concurrent requests wait for one refresh instead of each calling upstream; on Neon's
  * pooled endpoint a session-scoped lock could leak to another client, so xact scope is required.
  */
-export async function ensureFreshSnapshot(): Promise<void> {
-  const pool = getPool();
-  const settings = await getDemoSettings(pool);
-  const latest = await latestAttempt(pool);
-  if (!needsRefresh(latest, settings, new Date(), env.refreshSeconds)) return;
-
+async function runRefresh(settings: DemoSettings): Promise<void> {
   await withTransaction(async (c) => {
     await c.query("select pg_advisory_xact_lock($1)", [REFRESH_LOCK_KEY]);
-    const again = await latestAttempt(c);
-    if (!needsRefresh(again, settings, new Date(), env.refreshSeconds)) return;
+    const again = await readState(c);
+    if (!needsRefresh(again.latest, settings, new Date(), env.refreshSeconds)) return;
     const out = await fetchAllSources(settings);
     await c.query(
       `insert into price_snapshots
@@ -126,10 +140,34 @@ export async function ensureFreshSnapshot(): Promise<void> {
   });
 }
 
-export async function getPriceView(): Promise<PriceView> {
-  await ensureFreshSnapshot();
-  const pool = getPool();
-  const [settings, latest, good] = await Promise.all([getDemoSettings(pool), latestAttempt(pool), latestGood(pool)]);
+/**
+ * Returns true when a refresh ran before returning. When `block` is false and a good price exists,
+ * the refresh is scheduled after the response so page renders never wait on upstream.
+ */
+async function refreshIfDue(state: PriceState, block: boolean): Promise<boolean> {
+  if (!needsRefresh(state.latest, state.settings, new Date(), env.refreshSeconds)) return false;
+  const task = () => runRefresh(state.settings).catch((e) => console.error("price refresh failed", e));
+  if (block || !state.good) {
+    await task();
+    return true;
+  }
+  try {
+    after(task);
+  } catch {
+    void task();
+  }
+  return false;
+}
+
+/** Blocking refresh, used before issuing quotes and after demo changes. */
+export async function ensureFreshSnapshot(): Promise<void> {
+  await refreshIfDue(await readState(), true);
+}
+
+export async function getPriceView(opts: { block?: boolean } = {}): Promise<PriceView> {
+  let state = await readState();
+  if (await refreshIfDue(state, opts.block ?? false)) state = await readState();
+  const { settings, latest, good } = state;
   const now = new Date();
   const c = classify({ good, latest, settings, now, refreshSeconds: env.refreshSeconds, staleCapSeconds: env.staleCapSeconds });
   const market = c.status === "paused" ? null : good?.marketPkrPerG ?? null;
@@ -196,9 +234,11 @@ export async function updateDemoSettings(patch: DemoPatch): Promise<DemoSettings
     sets.push("updated_at = now()");
     await getPool().query(`update demo_settings set ${sets.join(", ")} where id = 1`, vals);
   }
+  if (sourcesChanged) await ensureFreshSnapshot();
   return getDemoSettings();
 }
 
 export async function resetDemo(): Promise<void> {
   await getPool().query("select reset_demo()");
+  await ensureFreshSnapshot();
 }

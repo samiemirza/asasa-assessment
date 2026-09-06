@@ -116,7 +116,7 @@ export async function createQuote(input: { side?: unknown; mode?: unknown; amoun
   const parsed = parseAmount(mode, input.amount as string | number);
   if (!parsed.ok) return fail("VALIDATION", parsed.message);
 
-  const price = await getPriceView();
+  const price = await getPriceView({ block: true });
   if (price.status === "paused" || price.buy == null || price.sell == null || price.market == null || !price.source) {
     return fail("PRICING_UNAVAILABLE", price.pausedReason ?? "Pricing is paused", { pausedReason: price.pausedReason });
   }

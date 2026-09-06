@@ -1,16 +1,17 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { ChevronRight, HistoryIcon } from "@/components/Icons";
+import { HistorySkeleton } from "@/components/Skeleton";
 import { fmtDateTime, fmtG, fmtPKR } from "@/lib/format";
 import { listTrades } from "@/lib/quotes/service";
 
 export const dynamic = "force-dynamic";
 
-export default async function HistoryPage() {
+async function HistoryContent() {
   const trades = await listTrades(100);
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header title="History" subtitle={trades.length ? `${trades.length} ${trades.length === 1 ? "trade" : "trades"}` : "Receipts appear here"} />
+    <>
       {trades.length === 0 ? (
         <div className="rounded-card bg-card px-6 py-14 text-center">
           <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-card-2 text-fg-2">
@@ -45,6 +46,17 @@ export default async function HistoryPage() {
           })}
         </ul>
       )}
+    </>
+  );
+}
+
+export default function HistoryPage() {
+  return (
+    <main className="flex-1 px-4 pb-6">
+      <Header title="History" subtitle="Every trade has a receipt" />
+      <Suspense fallback={<HistorySkeleton />}>
+        <HistoryContent />
+      </Suspense>
     </main>
   );
 }
