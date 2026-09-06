@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DemoIcon, HistoryIcon, StatusIcon, TradeIcon } from "./Icons";
+import { HistoryIcon, ProfileIcon, StatusIcon, TradeIcon } from "./Icons";
 
 const items = [
   { href: "/", label: "Trade", Icon: TradeIcon },
   { href: "/history", label: "History", Icon: HistoryIcon },
   { href: "/status", label: "Status", Icon: StatusIcon },
-  { href: "/demo", label: "Demo", Icon: DemoIcon },
+  { href: "/profile", label: "Profile", Icon: ProfileIcon },
 ];
 
 export function TabBar() {

@@ -50,12 +50,24 @@ Seed balances: PKR 500,000 in the wallet, 5.0000 g customer gold, 10.0000 g plat
 | `PRICE_STALE_CAP_SECONDS` | Age after which the last good price stops being tradable, default 900 |
 | `BUY_MARKUP` / `SELL_MARKDOWN` | Spread multipliers, default 1.10 and 0.90 |
 
-The guardrail floor and the quote lock duration live in the database (`demo_settings`) so reviewers can change them from the Demo tab without a redeploy.
+The guardrail floor and the quote lock duration live in the database (`demo_settings`). There is no admin panel in the product, but reviewers can drive the stress cases from the deployed link with a few curl commands:
+
+```bash
+BASE=https://asasa-assessment.vercel.app
+curl -X POST $BASE/api/demo -H 'content-type: application/json' -d '{"primaryDown":true}'    # PakGold stops answering, GoldPrice.org takes over
+curl -X POST $BASE/api/demo -H 'content-type: application/json' -d '{"primaryDown":true,"fallbackDown":true}'   # both down, last good price served then paused after 15 min
+curl -X POST $BASE/api/demo -H 'content-type: application/json' -d '{"forceStale":true}'    # pause trading immediately
+curl -X POST $BASE/api/demo -H 'content-type: application/json' -d '{"buyFloorPkrPerG":60000}'   # guardrail binds, quotes show the badge
+curl -X POST $BASE/api/demo -H 'content-type: application/json' -d '{"quoteTtlSeconds":10}'   # watch a quote expire quickly
+curl -X POST $BASE/api/demo/reset    # seed balances, clear history, default settings
+```
+
+Expired quotes, double confirms and every balance shortfall need no flags at all.
 
 ## How it is put together
 
 ```
-app/(tabs)/            Trade, History, Status, Demo screens
+app/(tabs)/            Trade, History, Status, Profile screens
 app/quote/[id]         Review a locked quote (countdown, confirm, expiry)
 app/trade/[id]         Receipt with before and after balances
 app/api/*              JSON route handlers (see below)
@@ -76,7 +88,7 @@ scripts/               migrate, smoke test, screenshots, devlog harness
 | `GET /api/quotes/:id` | Quote with server-computed seconds left |
 | `POST /api/quotes/:id/confirm` | Settles once; repeat calls return the same trade |
 | `GET /api/trades`, `GET /api/trades/:id` | History and receipts |
-| `GET/POST /api/demo`, `POST /api/demo/reset` | Reviewer scenario flags and reset |
+| `GET/POST /api/demo`, `POST /api/demo/reset` | Reviewer scenario flags and reset (no UI, see above) |
 
 Errors come back as `{ error: { code, message, details } }` with codes such as `QUOTE_EXPIRED`, `INSUFFICIENT_CASH`, `INSUFFICIENT_GOLD`, `INSUFFICIENT_INVENTORY`, `PRICING_UNAVAILABLE`.
 

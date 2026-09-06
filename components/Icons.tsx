@@ -21,8 +21,17 @@ export const HistoryIcon = (p: P) => (
 export const StatusIcon = (p: P) => (
   <svg {...base(p)}><path d="M3 12h4l2.5-6 4 12 2.5-6h5" /></svg>
 );
-export const DemoIcon = (p: P) => (
-  <svg {...base(p)}><path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2.2" /><circle cx="10" cy="17" r="2.2" /></svg>
+export const ProfileIcon = (p: P) => (
+  <svg {...base(p)}><circle cx="12" cy="9" r="3.5" /><path d="M5 19.5c1.2-3.2 3.8-4.8 7-4.8s5.8 1.6 7 4.8" /></svg>
+);
+export const ShieldIcon = (p: P) => (
+  <svg {...base(p)}><path d="M12 3.5 5 6v5.5c0 4.2 2.8 7.4 7 9 4.2-1.6 7-4.8 7-9V6z" /><path d="m9.5 12 1.8 1.8L15 10.3" /></svg>
+);
+export const BankIcon = (p: P) => (
+  <svg {...base(p)}><path d="M3.5 9.5 12 5l8.5 4.5" /><path d="M5 10v7M9.5 10v7M14.5 10v7M19 10v7M3.5 19.5h17" /></svg>
+);
+export const BellIcon = (p: P) => (
+  <svg {...base(p)}><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5h-14z" /><path d="M10 20a2 2 0 0 0 4 0" /></svg>
 );
 export const ChevronLeft = (p: P) => <svg {...base(p)}><path d="M14.5 6 8.5 12l6 6" /></svg>;
 export const ChevronRight = (p: P) => <svg {...base(p)}><path d="m9.5 6 6 6-6 6" /></svg>;

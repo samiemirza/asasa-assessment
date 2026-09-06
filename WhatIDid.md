@@ -14,7 +14,7 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 - **One customer, one platform, PKR only, 24K only.** Seed: PKR 500,000, 5.0000 g customer gold, 10.0000 g platform inventory. Units: PKR to 2 dp, grams to 4 dp, troy ounce = 31.1035 g, tola shown only as information.
 - **PakGold has no API.** Its site renders "Rs. --" server side and computes rates in the browser from `api.gold-api.com` (XAU/USD) and `open.er-api.com` (USD/PKR) divided by 31.1035. The primary adapter reproduces that published formula server side and is labelled PakGold. This is stated as a known gap below.
 - **GoldPrice.org's data host blocks non-browser clients.** It returns 403 unless the request carries browser-style Referer, Origin and Sec-Fetch headers (verified from Vercel, not just from my laptop). The fallback adapter sends them.
-- **A failed check counts as a check.** "No more than once every five minutes" is applied to attempts, not successes, so an outage cannot turn into a retry storm. The one documented exception is a change made from the Demo tab, which requests an early refresh so the effect is visible immediately.
+- **A failed check counts as a check.** "No more than once every five minutes" is applied to attempts, not successes, so an outage cannot turn into a retry storm. The one documented exception is a scenario change through the reviewer endpoint, which refreshes at once so the effect is visible immediately.
 - **Guardrail default PKR 30,000 per gram**, deliberately below market x 1.10 so it does not bind until a reviewer raises it.
 
 ## What I built
@@ -27,7 +27,9 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 
 **Status.** Selected source, refreshed and next check, both source readings or their errors, cross-source deviation, the pricing rule with the guardrail state, and the last ten refresh attempts.
 
-**Demo.** Reviewer tooling, plainly labelled: primary down, fallback down, distrust last good price, quote lock duration (5 to 600 s), guardrail floor with a one-tap "Bind" preset computed from the current market, and reset.
+**Profile.** A dummy account screen in the same visual system: identity card, live portfolio value (gold at today's sell price plus cash), personal details, payout bank account, notification and security preferences.
+
+**Reviewer endpoint, no admin panel.** The brief puts admin panels out of scope but asks that reviewers can try the stress cases, including the guardrail, without changing code. I first built a Demo tab for this, then removed it on the product owner's direction; the scenario flags stayed as a small `POST /api/demo` endpoint documented in the README with curl commands. Fallbacks need no flags to work, they are automatic.
 
 **Server.** Postgres owns the invariants: balances have `>= 0` checks, `trades.quote_id` is unique, `confirm_quote(uuid)` does the whole settlement in one transaction with row locks and returns the existing trade on a repeat call, and a ledger records every balance movement so before and after always reconcile. Upstream refresh is guarded by a transaction-scoped advisory lock so concurrent requests wait for one fetch rather than each calling upstream.
 
@@ -41,12 +43,12 @@ The hint "seek and you shall find" led me to `api.myasasa.com/api/v1/market/reta
 4. **PKR entry rounds grams down.** When a user types PKR, grams are floored to 4 dp and the PKR actually charged is re-derived, so nobody is charged more than they typed. Grams entry rounds PKR to 2 dp.
 5. **Report the tightest constraint.** With the seed numbers, 10 g of inventory costs about PKR 435,000, so cash can never be the only thing blocking a buy. The quote pre-check reports whichever constraint binds first and tells the user the maximum they can do, and the same checks run again atomically at confirm. Cash-first shortfalls become reachable when the guardrail raises the buy price.
 6. **Both sources are polled each refresh, primary wins.** That costs one extra request every five minutes and buys a cross-source deviation check (over 5% shows a notice) and an honest fallback reading on the Status tab even when it is not in use.
-7. **One font, one action per screen.** Geist only. Every screen has one primary button; navigation is the header back control and the tab bar. No dead links.
+7. **One font, one action per screen.** Geist only. Every screen has at most one primary button; navigation is the header back control and the tab bar. No dead links.
 
 ## Known gaps
 
 - "PakGold" is PakGold's published spot formula reproduced server side, not a feed from pakgold.pk, because the site has no API and its HTML carries no numbers.
-- Demo controls are unauthenticated by requirement. A real system would gate them, and a real system would not let a client change the guardrail.
+- The reviewer endpoint is unauthenticated by requirement. A real system would gate it, and a real system would not let a client change the guardrail.
 - Single user, single currency, no auth, no fees or taxes, no partial fills, no price chart beyond a small sparkline once enough history exists.
 - Upstream feeds are third parties with no SLA. If both are unreachable for 15 minutes the product pauses, which is the intended behaviour, but a production system would want more than two sources and alerting.
 - Times are shown in Pakistan time regardless of the viewer's location, a deliberate choice for a PKR product and to keep server and client rendering identical.

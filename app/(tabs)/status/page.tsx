@@ -74,7 +74,7 @@ async function StatusContent() {
       <Card className="divide-y divide-hairline">
         <Row label="You buy at" value={p.buy != null ? `${fmtPKR(p.buy, 2)} / g` : "Paused"} sub={p.guardrailApplied ? "Guardrail floor applied" : `Market x ${p.markup.toFixed(2)}`} />
         <Row label="You sell at" value={p.sell != null ? `${fmtPKR(p.sell, 2)} / g` : "Paused"} sub={`Market x ${p.markdown.toFixed(2)}`} />
-        <Row label="Guardrail floor" value={`${fmtPKR(p.guardrail, 2)} / g`} sub="Adjustable in Demo" />
+        <Row label="Guardrail floor" value={`${fmtPKR(p.guardrail, 2)} / g`} sub="Minimum buy price" />
         <Row label="Quote lock" value={`${p.quoteTtlSeconds} seconds`} sub="Owned by the server" />
       </Card>
 

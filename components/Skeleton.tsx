@@ -105,41 +105,19 @@ export function StatusSkeleton() {
   );
 }
 
-export function DemoSkeleton() {
+export function PortfolioSkeleton() {
   return (
-    <div role="status" aria-label="Loading">
-      <Sk className="mb-2 mt-5 h-5 w-32 bg-card" />
-      <CardSk className="divide-y divide-hairline">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between px-5 py-4">
-            <div>
-              <Sk className="h-4 w-40" />
-              <Sk className="mt-2 h-3 w-56" />
-            </div>
-            <Sk className="h-7 w-12 rounded-pill" />
-          </div>
-        ))}
-      </CardSk>
-      {[0, 1].map((i) => (
-        <div key={i}>
-          <Sk className="mb-2 mt-5 h-5 w-28 bg-card" />
-          <CardSk className="px-5 py-4">
-            <Sk className="h-4 w-32" />
-            <Sk className="mt-2 h-3 w-56" />
-            <Sk className="mt-3 h-12" />
-            <div className="mt-2 flex gap-2">
-              <Sk className="h-7 w-16 rounded-pill" />
-              <Sk className="h-7 w-24 rounded-pill" />
-            </div>
-          </CardSk>
-        </div>
-      ))}
-      <Sk className="mb-2 mt-5 h-5 w-16 bg-card" />
-      <CardSk className="p-4">
-        <Sk className="h-3 w-64" />
-        <Sk className="mt-3 h-14 rounded-pill" />
-      </CardSk>
-    </div>
+    <CardSk className="p-5" >
+      <div className="flex items-center justify-between">
+        <Sk className="h-3.5 w-28" />
+        <Sk className="h-3.5 w-20" />
+      </div>
+      <Sk className="mt-3 h-9 w-52" />
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <Sk className="h-[66px]" />
+        <Sk className="h-[66px]" />
+      </div>
+    </CardSk>
   );
 }
 
