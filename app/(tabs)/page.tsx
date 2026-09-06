@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { BalanceCards } from "@/components/BalanceCards";
 import { DashboardActions } from "@/components/DashboardActions";
-import { Header } from "@/components/Header";
 import { MarketCard } from "@/components/MarketCard";
 import { MarketSection } from "@/components/MarketSection";
 import { RecentTransactions } from "@/components/RecentTransactions";
@@ -25,8 +24,7 @@ async function Dashboard() {
 
 export default function HomePage() {
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header logo title="Asasa Gold" />
+    <main className="flex-1 px-4 pb-6 pt-3">
       <Suspense fallback={<DashboardSkeleton />}>
         <Dashboard />
       </Suspense>

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Header } from "@/components/Header";
 import { ChevronRight, HistoryIcon } from "@/components/Icons";
 import { HistorySkeleton } from "@/components/Skeleton";
 import { fmtDateTime, fmtG, fmtPKR } from "@/lib/format";
@@ -52,8 +51,7 @@ async function HistoryContent() {
 
 export default function HistoryPage() {
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header logo title="Transactions" subtitle="Every trade has a receipt" />
+    <main className="flex-1 px-4 pb-6 pt-3">
       <Suspense fallback={<HistorySkeleton />}>
         <HistoryContent />
       </Suspense>

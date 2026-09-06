@@ -1,4 +1,3 @@
-import { Header } from "@/components/Header";
 import { BellIcon } from "@/components/Icons";
 import { PreferenceToggles } from "@/components/PreferenceToggles";
 import { PROFILE, ProfileCard } from "@/components/ProfileCard";
@@ -8,8 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default function ProfilePage() {
   return (
-    <main className="flex-1 px-4 pb-6">
-      <Header logo title="Profile" subtitle="Your account and preferences" />
+    <main className="flex-1 px-4 pb-6 pt-3">
       <ProfileCard />
 
       <SectionTitle>Personal details</SectionTitle>

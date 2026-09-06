@@ -133,10 +133,9 @@ export function TabBar() {
                   ref={(n) => {
                     icons.current[i] = n;
                   }}
-                  className="flex flex-col items-center gap-0.5"
+                  className="grid place-items-center"
                 >
-                  <Glyph size={22} strokeWidth={focused ? 2.2 : 1.8} />
-                  <span className="text-[10px] font-medium leading-none tracking-[-0.01em]">{label}</span>
+                  <Glyph size={M.iconSize} strokeWidth={focused ? 2.2 : 1.8} />
                 </span>
               </Link>
             );
