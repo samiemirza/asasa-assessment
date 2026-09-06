@@ -6,7 +6,7 @@ import { PortfolioSkeleton } from "@/components/Skeleton";
 export default function Loading() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header logo title="Wallet" subtitle="Balances and payout accounts" />
+      <Header logo title="Wallet" />
       <PortfolioSkeleton />
       <SectionTitle>Withdraw</SectionTitle>
       <Accounts />

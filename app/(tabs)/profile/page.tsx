@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default function ProfilePage() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header logo title="Profile" subtitle="Your account and preferences" />
+      <Header logo title="Profile" />
       <ProfileCard />
 
       <SectionTitle>Personal details</SectionTitle>

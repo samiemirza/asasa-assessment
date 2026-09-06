@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default function WalletPage() {
   return (
     <main className="flex-1 px-4 pb-6">
-      <Header logo title="Wallet" subtitle="Balances and payout accounts" />
+      <Header logo title="Wallet" />
       <Suspense fallback={<PortfolioSkeleton />}>
         <Portfolio />
       </Suspense>
