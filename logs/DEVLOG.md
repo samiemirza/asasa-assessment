@@ -55,3 +55,6 @@ Companion machine logs live in `logs/agent/` and full transcripts in `logs/trans
 
 ### 2026-09-06 21:18 PKT
 **Undo top bar; Recent removed; Transactions by month.** Reverted the fixed top bar (headings with the logo are back) but kept the navbar icons-only since the labels were never meant to sit there. Removed the Recent section from Home. Transactions now groups trades into month sections (Pakistan time) with a month heading above each card. The revert conflicted on the continuously appended hook logs; resolved by keeping the current logs. tsconfig.tsbuildinfo untracked and ignored.
+
+### 2026-09-06 21:31 PKT
+**Primary showed 'No reading' on production.** Cause: at 16:25 UTC the gold-api/er-api pair took longer than the adapter's 4 s cap from sin1, so the check recorded 'Timed out after 4000 ms' for PakGold and GoldPrice.org took over, exactly as designed; the Market section showed the error and the card said fallback. Snapshot history: 2 primary timeouts in 92 checks, every other primary failure is a simulated outage from smoke runs. The next 5-minute check restored PakGold by itself. Hardening: per-feed timeout 5 s with one 3 s retry on timeouts and network errors (HTTP errors are not retried).

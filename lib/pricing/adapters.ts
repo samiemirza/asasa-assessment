@@ -1,7 +1,9 @@
 import { round2, TROY_OZ_G } from "../money";
 import type { AdapterResult, PriceAdapter } from "./types";
 
-const TIMEOUT_MS = 4000;
+const TIMEOUT_MS = 5000;
+/** A slow upstream gets one quick second chance before the check counts as failed. */
+const RETRY_TIMEOUT_MS = 3000;
 // GoldPrice.org's data host answers 403 to non-browser requests. Verified from Vercel on 2026-09-06:
 // user agent alone is not enough, the Referer, Origin and Sec-Fetch headers are what unlock it.
 const BROWSER_HEADERS = {
@@ -27,18 +29,32 @@ export function assertPlausible(pkrPerGram: number): number {
   return pkrPerGram;
 }
 
-async function fetchText(url: string, headers: Record<string, string> = {}): Promise<string> {
+async function fetchOnce(url: string, headers: Record<string, string>, timeoutMs: number): Promise<string> {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, { headers, signal: ctrl.signal, cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
   } catch (e) {
-    if ((e as Error).name === "AbortError") throw new Error(`Timed out after ${TIMEOUT_MS} ms`);
+    if ((e as Error).name === "AbortError") throw new Error(`Timed out after ${timeoutMs} ms`);
     throw e;
   } finally {
     clearTimeout(timer);
+  }
+}
+
+/** Timeouts and network errors get one retry; HTTP errors (403, 429, 5xx) do not. */
+async function fetchText(url: string, headers: Record<string, string> = {}): Promise<string> {
+  try {
+    return await fetchOnce(url, headers, TIMEOUT_MS);
+  } catch (e) {
+    if (/^HTTP \d+/.test((e as Error).message)) throw e;
+    try {
+      return await fetchOnce(url, headers, RETRY_TIMEOUT_MS);
+    } catch (e2) {
+      throw new Error(`${(e as Error).message}, retry: ${(e2 as Error).message}`);
+    }
   }
 }
 
